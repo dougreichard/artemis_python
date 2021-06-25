@@ -1,0 +1,5 @@
+!missions/
+missions/*
+!missions/cruiser_tournament/
+!missions/the_arena/
+.vscode/

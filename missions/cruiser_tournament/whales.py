@@ -15,7 +15,9 @@ class Whale:
     def exists(self, sim):
         sim.space_object_exists(self.id)
 
-
+"""
+Manage all the whales
+"""
 class Whales:
     whales = [
         Whale("Ed",40000,-500,91000),
