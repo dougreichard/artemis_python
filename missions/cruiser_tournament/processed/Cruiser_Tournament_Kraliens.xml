@@ -1,0 +1,32 @@
+<mission_data version="1.0">
+  <imports>
+    <import name="Cruiser_Tournament_templates.xml" />
+        <import name="Cruiser_Tournament_spawn.xml" />
+  </imports>
+  <values>
+    <range name="kraliens">
+      TonnageObject("K00", 40300.0, 0.0, 52300.0, 45,  "Kralien", "Cruiser","small", fleetnumber=68),
+      TonnageObject("K01", 40300.0, 0.0, 52000.0, 45,  "Kralien", "Cruiser","small", fleetnumber=68),
+      TonnageObject("K02", 40000.0, 0.0, 52000.0, 45,  "Kralien", "Cruiser","small", fleetnumber=68),
+      TonnageObject("K04", 60000.0, 0.0, 47000.0, 180, "Kralien", "Battleship","medium", fleetnumber=69),
+      TonnageObject("K05", 60700.0, 0.0, 47000.0, 180, "Kralien", "Battleship","medium", fleetnumber=69),
+      TonnageObject("K06", 60300.0, 0.0, 47000.0, 180, "Kralien", "Battleship","medium", fleetnumber=69),
+      TonnageObject("K07", 70000.0, 0.0, 42000.0, 180, "Kralien", "Dreadnought","large", fleetnumber=67),
+      TonnageObject("K08", 69700.0, 0.0, 42000.0, 180, "Kralien", "Dreadnought","large", fleetnumber=67),
+      TonnageObject("K09", 70300.0, 0.0, 42000.0, 180, "Kralien", "Dreadnought","large", fleetnumber=67),
+      TonnageObject("K10", 60300.0, 0.0, 2300.0, 45,   "Kralien", "Cruiser","small", fleetnumber=57),
+      TonnageObject("K11", 60300.0, 0.0, 2000.0, 45,   "Kralien", "Cruiser","small", fleetnumber=57),
+      TonnageObject("K12", 60000.0, 0.0, 2000.0, 45,   "Kralien", "Cruiser","small", fleetnumber=57),
+      TonnageObject("K14", 60000.0, 0.0, 17000.0, 180, "Kralien", "Battleship","medium", fleetnumber=58),
+      TonnageObject("K15", 59700.0, 0.0, 17000.0, 180, "Kralien", "Battleship","medium", fleetnumber=58),
+      TonnageObject("K16", 60300.0, 0.0, 17000.0, 180, "Kralien", "Battleship","medium", fleetnumber=58),
+      TonnageObject("K17", 60000.0, 0.0, 12000.0, 180, "Kralien", "Dreadnought","large", fleetnumber=59),
+      TonnageObject("K18", 59700.0, 0.0, 12000.0, 180, "Kralien", "Dreadnought","large", fleetnumber=59),
+      TonnageObject("K19", 60300.0, 0.0, 12000.0, 180, "Kralien", "Dreadnought","large", fleetnumber=59),
+    </range>
+  </values>
+  <repeat _range="kraliens">
+    <!-- Gets params from range since they are named the same.-->
+    <tonnage:start />
+  </repeat>
+</mission_data>

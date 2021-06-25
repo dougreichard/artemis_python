@@ -1,0 +1,36 @@
+<mission_data version="1.0">
+
+  <imports>
+    <import name="TheArena-capture-object-template.xml" />
+    <import name="TheArena-ranges.xml"/>
+  </imports>
+
+  <start>
+    <repeat _range="Eggs">
+      <set_variable name="${egg}" value="1.0"/>
+      <set_timer name="${egg}_Timer" seconds="${seconds}"/>
+    </repeat>
+    <repeat _range="AllShips">
+      <set_variable name="${ship}_Cargo" value="0.0"/>
+    </repeat>
+
+  </start>
+
+  <repeat _range="Eggs">
+    <event name="Spawn ${egg}">
+      <if_variable name="${egg}" comparator="EQUALS" value="1.0"/>
+      <if_variable name="Number_of_Players" comparator="GREATER" value="${playerCount}"/>
+      <if_timer_finished name="${egg}_Timer"/>
+      <set_variable name="${egg}" value="2.0"/>
+      <create type="genericMesh" x="${x}" y="${y}" z="${z}" name="${egg}" meshFileName="dat\mine.dxs" textureFileName="dat\asteroidTexture.png"/>
+      <set_object_property property="pushRadius" value="0.0" name="${egg}"/>
+    </event>
+  </repeat>
+
+  <repeat _range="Eggs" _as="Egg">
+    <repeat _range="AllShips">
+      <expand _template="CaptureObject" ship="${ship}" object="${Egg.egg}" target="${ship} Station" objectText="Egg" captureDistance="100" dropDistance="1000" cargoHold="${AllShips.ship}_Cargo" scoreVariable="${AllShips.ship}_Score" scoringEnabledVariable="Scoring_Allowed" sideValue="${sideValue}" />
+    </repeat>
+  </repeat>
+
+</mission_data>

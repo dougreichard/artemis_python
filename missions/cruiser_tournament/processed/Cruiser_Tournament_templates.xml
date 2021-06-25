@@ -1,0 +1,73 @@
+<mission_data version="1.0">
+  <imports>
+    <import name="Cruiser_Tournament_Points.xml" />
+  </imports>
+  <templates>
+    <template name="tonnage:destroy">
+      <params>
+        <param name="name" description="The name of the ship"/>
+        <param name="weight" description="The weight in tonnage of the ship" default="${POINTS[race][hull].weight}" />
+        <param name="race" description="The race text for the ship"/>
+        <param name="hull" description="The hull text for the ship" default=""/>
+        <param name="conditions" description="Template to insert for conditions" default=""/>
+        <param name="friend" default=""/>
+      </params>
+      <event name="${name} Destroyed">
+        <expand _template="${conditions}" _optional="true" />
+        <expand _skip="${friend!=''}">
+          <if_variable name="${name}_surrendered" comparator="EQUALS" value="0"/>
+        </expand>
+        <if_variable name="${name}_dead" comparator="EQUALS" value="0"/>
+        <if_not_exists name="${name}"/>
+        <set_variable name="${name}_dead" value="1"/>
+        <set_variable name="Tonnage" value="Tonnage+${weight}"/>
+        <big_message title="${race} ${hull} ${name} destroyed" subtitle1="${_.int(weight) <0?'Penalty ':''}${weight} kilotons" subtitle2=""/>
+        <set_variable name="report_score" value="1"/>
+        <set_timer name="report_timer" seconds="8"/>
+        <log text="${race} ${hull} ${name} destroyed"/>
+      </event>
+    </template>
+    <template name="tonnage:surrender">
+      <params>
+        <param name="name" description="The name of the ship"/>
+        <param name="weight" description="The weight in tonnage of the ship" default="${POINTS[race][hull].weight}" />
+        <param name="surrender" description="The surrender bonus of the ship" default="${POINTS[race][hull].surrender}"/>
+        <param name="race" description="The race text for the ship"/>
+        <param name="hull" description="The hull text for the ship" default=""/>
+        <param name="conditions" description="Template to insert for conditions" default=""/>
+      </params>
+      <event name="${name} Surrendered">
+        <expand _template="${conditions}" _optional="true" />
+        <if_variable name="${name}_surrendered" comparator="EQUALS" value="0"/>
+        <if_object_property property="hasSurrendered" name="${name}" comparator="EQUALS" value="1"/>
+        <set_variable name="${name}_surrendered" value="1"/>
+        <set_object_property property="topSpeed" value="0.2" name="${name}"/>
+        <set_variable name="Tonnage" value="Tonnage+${weight}+${surrender}"/>
+        <big_message title="${race} ${hull} surrendered" subtitle1="${weight} kilotons" subtitle2="+${surrender} kt surrender bonus"/>
+        <set_variable name="report_score" value="1"/>
+        <set_timer name="report_timer" seconds="8"/>
+        <log text="${race} ${hull} ${name} Surrendered"/>
+      </event>
+    </template>
+    <template name="tonnage:points">
+      <expand _template="tonnage:surrender" />
+      <expand _template="tonnage:destroy" />
+    </template>
+    <template name="tonnage:start">
+      <params>
+        <param name="friend" default=""/>
+      </params>
+      <expand _start="true" _template="spawn:create" />
+      <expand _template="tonnage:surrender" _skip="${friend!=''}" />
+      <expand _template="tonnage:destroy" />
+    </template>
+    <template name="tonnage:event">
+      <params>
+        <param name="friend" default=""/>
+      </params>
+      <expand _template="spawn:event" />
+      <expand _template="tonnage:surrender" _skip="${friend!=''}" />
+      <expand _template="tonnage:destroy" />
+    </template>
+  </templates>
+</mission_data>
