@@ -1,4 +1,3 @@
-import glm
 
 class Whale:
     def __init__(self, name, x, y, z):
@@ -8,9 +7,12 @@ class Whale:
         self.z = z
 
     def spawn(self, sim):
-        self.id = sim.add_active("whale", "whale") #pod? ??
+        #TODO: Whales are needed
+        # self.id = sim.add_active("whale", "whale") #pod? ??
+        self.id = sim.make_new_passive("behav_asteroid, ", "Asteroid 1")
         obj = sim.get_space_object(self.id)
-        obj.move(glm.Vec3(self.x,self.y,self.z))
+        sim.reposition_space_object(obj, self.x, 0,self.z)
+        
 
     def exists(self, sim):
         sim.space_object_exists(self.id)

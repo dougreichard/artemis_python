@@ -1,5 +1,4 @@
 from tonnage import SpawnState, TonnageObject, TonnageSkaraan
-import glm
 
 
 class Trigger:
@@ -11,16 +10,18 @@ class Trigger:
         self.state = SpawnState.NotSpawned
 
     def spawn(self, sim):
-        self.id = sim.add_passive("anomaly", "anomaly") 
+        #TODO: Make Anomaly
+        self.id = sim.make_new_passive("behav_asteroid, ", "Asteroid 1") 
         obj = sim.get_space_object(self.id)
-        obj.move(glm.Vec3(self.x,0.0,self.z))
+        sim.reposition_space_object(obj, self.x, 0,self.z)
+        self.state = SpawnState.Spawned
         #TODO: object.pickupType
         #TODO: Set name
 
     def tick(self, sim):
         if self.state == SpawnState.Spawned:
             if not sim.space_object_exists(self.id):
-                self.state == SpawnState.Destroyed
+                self.state = SpawnState.Destroyed
 
 
 class Fleet:
@@ -52,6 +53,8 @@ class Fleet:
             if count == len(self.triggers):
                 for enemy in self.enemies:
                     enemy.spawn(sim)
+                self.state = SpawnState.Spawned
+                print(f'Bonus fleet spawned {self.name}')
                 """
                 TODO:
                 <incoming_comms_text from = "Enemy Fleet" >
@@ -89,7 +92,7 @@ class BonusFleets:
                   TonnageObject("B02", 26140, -200, 31800, 200,
                                 "Torgoth", "Behemoth",     "large"),
                   TonnageObject("B03", 26960, -200, 33200, 200,
-                                "Kralien", "Dreadnought",  "large"),
+                                "Kralien", "Dreadnaught",  "large"),
                   TonnageObject("B04", 26540, 200,  32300, 200,
                                 "Kralien", "Battleship",    "medium"),
                   TonnageObject("B05", 26640, 200,  34300, 200,
@@ -203,7 +206,7 @@ class BonusFleets:
               [Trigger("51", 5, 68265.0, 80210.0),
                Trigger("52", 5, 10426.0, 89228.0),
                Trigger("53", 5, 77426.0, 7212.0)
-               ]
+               ],
 
               [
                   TonnageSkaraan("B51", 65000, 0,   31000, 200, "Skaraan", "Enforcer", "medium", 

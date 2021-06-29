@@ -1,15 +1,18 @@
-import GAME
-import Difficulty
-import Mayday
-import Stations
-import Cargo
-import Destroyers
+# import GAME
+# import Difficulty
+# import Mayday
+# import Stations
+# import Cargo
+# import Destroyers
 
 from periods import Periods
 from bonusfleets import BonusFleets
+from stations import Stations
+
+import sbs
 
 
-from tonnage import TonnageObject, TonnageTorgoth, TonnageSkaraan, TonnageHunter
+from tonnage import SpawnState, TonnageObject, TonnageTorgoth, TonnageSkaraan, TonnageHunter
 """
   A TSN Cruiser has 48 minutes to vanquish as many enemies as possible.^^For a full crew of 6 in Artemis 2.7.1.^^Your Comms Officer should take notes or print out the Communications Cheat Sheet in the mission folder.
 """
@@ -54,12 +57,12 @@ class Mission:
                       "Dreadnought", "large", fleet_number=59),
         # SKARRAN
         TonnageSkaraan("K61", 50500.0, 0.0, 41500.0, 260.0, "Skaraan", "Defiler", "small", fleet_number=22,
-                      abillities={'ability_captain': "Warp", 'ability_clear': "Cloak,Drones,AnitiMine,shlddrain,shldvamp,LowVis,Stealth"}),
+                      abilities={'ability_captain': "Warp", 'ability_clear': "Cloak,Drones,AnitiMine,shlddrain,shldvamp,LowVis,Stealth"}),
         # PIRATES
-        TonnageObject("Lusty Wrench", 10.0, 10.0, 10, "Pirate",
-                      "Strongbow", "", fleet_number=1),
+       TonnageObject("Lusty Wrench", 10.0, 10.0, 10.0, 45, "Pirate",
+                    "Strongbow", "", fleet_number=1),
         # NOTE: Original had different points for these 40,20 vs 20,10
-        TonnageObject("Nimbus", 99990.0, -10.0, 10, "Pirate",
+        TonnageObject("Nimbus", 99990.0, -10.0, 10.0, 45, "Pirate",
                       "Strongbow", "", fleet_number=2),
         # Torgoth
         TonnageTorgoth("Behemoth 1", 22222.0, 500.0, 22200.0, 45.0, "Torgoth",
@@ -82,6 +85,7 @@ class Mission:
     # so they are not hooked in yet
     bonus_fleets = BonusFleets()
     periods = Periods()
+    stations = Stations()
 
     def start_map(self, sim):
         # <set_object_property property="nebulaIsOpaque" value="0"/>
@@ -100,6 +104,12 @@ class Mission:
         """
           Players start in bottom right of of the 100,000 x 100,000 sector with one shuttle 'Pilgrim' aboard
         """
+        
+        # playerID will be a NUMBER, a unique value for every space object that you create.
+        self.playerID = sim.make_new_player("behav_playership", "Battle Cruiser");
+        player = sim.get_space_object(self.playerID)
+        sim.reposition_space_object(player, 50000,0,50000)
+
         # <set_player_carried_type player_slot="0" bay_slot="0" name="Dagger" raceKeys="TSN player" hullKeys="TSN Shuttle"/>
         # <create type="player" player_slot="0" x="39055.0" y="0.0" z="85951.0" angle="295" name="Artemis" raceKeys="TSN player" hullKeys="Light Cruiser" warp="yes" jump="no"/>
         # <set_object_property property="energy" value="1100" player_slot="0"/>
@@ -112,10 +122,13 @@ class Mission:
     def start(self, sim):
         self.start_map(sim)
         self.start_player(sim)
-        self.bonus_fleets.start(sim)
+        #self.bonus_fleets.start(sim)
         for enemy in self.enemies:
             enemy.spawn(sim)
-        self.periods.start(sim)
+        self.jump_to = 0
+        self.jump = 0
+        self.stations.spawn(sim)
+        # self.periods.start(sim)
         """
         The Start Block also presents players with the mission title
 
@@ -125,20 +138,44 @@ class Mission:
         """
 
     def tick(self, sim):
-        self.bonus_fleets.tick(sim)
-        self.periods.tick(sim)
+        # self.bonus_fleets.tick(sim)
+        # self.periods.tick(sim)
         for enemy in self.enemies:
             enemy.tick(sim)
+        #things = self.stations.stations
+        #self.do_jump(things = self.enemies)
+
+    def do_jump(self, sim, things):
+        # every ten second jump near something
+        self.jump += 2
+        
+        if self.jump >2:
+            thing = things[self.jump_to]
+            if thing.state == SpawnState.Spawned: 
+                thing_id = thing.id
+                thing_obj = sim.get_space_object(thing_id)
+                if thing_obj is not None:
+                    player = sim.get_space_object(self.playerID)
+                    x = thing_obj.pos.x
+                    y = thing_obj.pos.y
+                    z = thing_obj.pos.z
+                    print(f'POS: {thing_obj.pos.x},{thing_obj.pos.y},{thing_obj.pos.z}')
+                    #sim.reposition_space_object(player, thing_obj.pos.x+600,thing_obj.pos.y+20,thing_obj.pos.z+600)
+                    sim.reposition_space_object(player, x+600,y+20,z+600)
+            self.jump = 0
+            self.jump_to = (self.jump_to+1) % len(things)
+            
+            print(f"next jump {self.jump_to} {things[self.jump_to].name}")
 
 
 mission = Mission()
 
 
-def handle_script_start(sim):
+def HandleScriptStart(sim):
     global mission
     mission.start(sim)
 
 
-def handle_script_tick(sim):
+def HandleScriptTick(sim):
     global mission
     mission.tick(sim)

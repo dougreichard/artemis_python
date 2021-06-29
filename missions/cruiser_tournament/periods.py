@@ -11,7 +11,7 @@ class Periods:
     periods = [
         Period([
             TonnageObject("Black Comet", 99990.0, -10.0, 10.0, 0,
-                          "Pirate", "Strongbow", "", -1, extra="spawn:pirate"),
+                          "Pirate", "Strongbow", "", -1),
             TonnageObject("D12", 16500, -350, 41100, 270, "Arvonian",
                           "Light Carrier", "carrier", 32),
             TonnageObject("R13", 13000, 450, 40500, 245,
@@ -54,7 +54,7 @@ class Periods:
         ]),
         Period([
             TonnageObject("Skywayman", 99990.0, -100.0, 10.0, 0,
-                          "Pirate", "Strongbow", " ", -1, extra="spawn:pirate"),
+                          "Pirate", "Strongbow", " ", -1),
             TonnageObject("D33", 16500, -500, 41000, 270,
                           "Arvonian", "Carrier", "carrier", 50),
             TonnageObject("D34", 16700, 500, 41900, 270,

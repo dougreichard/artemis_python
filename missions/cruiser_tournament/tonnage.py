@@ -1,5 +1,4 @@
 from enum import Enum
-import glm
 
 class SpawnState(Enum):
         NotSpawned = 1
@@ -17,7 +16,7 @@ class TonnageObject:
     This is a lookup table to score Tonnage
     TODO: maybe this should be logic now
     """
-    POINTS= [{
+    POINTS= {
         "Enemy": {
             "Hunter": { "weight":40, "surrender":20 }
         },
@@ -50,7 +49,7 @@ class TonnageObject:
             "Executor": { "weight":75, "surrender":35 },
             "Enforcer": { "weight":50, "surrender":25 },
         },
-    }]
+    }
 
 
     def __init__(self, name, x,y,z,angle, race,hull, size, fleet_number=-1):
@@ -63,10 +62,17 @@ class TonnageObject:
         self.hull = hull
         self.size = size
         self.fleet_number = fleet_number
-        
+        # these are temporary Since these are not in the ship data now
+        if hull == 'Cruiser':
+            self.hull = 'Battleship'
+        if hull == 'Strongbow':
+            self.hull = 'Battleship'
+        # Dreadnought is mispelled in ship data
+        if hull == 'Dreadnought':
+            self.hull = 'Dreadnaught'
+        if hull == 'Defiler':
+            self.hull = 'Hunter'
         self.state = SpawnState.NotSpawned
-        # self.id
-    
 
     # add tonnage points when destroyed
     def score_points(self, sim, surrender):
@@ -74,9 +80,10 @@ class TonnageObject:
             race = TonnageObject.POINTS[self.race]
             if self.hull in race:
                 if surrender: 
-                    TonnageObject.tonnage += race.self.hull['surrender']
+                    TonnageObject.tonnage += race[self.hull]['surrender']
                 else:
-                    TonnageObject.tonnage += race.self.hull['weight']
+                    TonnageObject.tonnage += race[self.hull]['weight']
+                print(f'Total tonnage now: {TonnageObject.tonnage}')
                 # <big_message title="${race} ${hull} ${name} destroyed" OR SURRENDER
                 #       subtitle1="${_.int(weight) <0?'Penalty ':''}${weight} kilotons" subtitle2=""/>
                 # <log text="${race} ${hull} ${name} destroyed"/>
@@ -91,16 +98,18 @@ class TonnageObject:
     def update_state(self, sim):
         if self.state == SpawnState.Spawned:
             if not sim.space_object_exists(self.id):
-                self.state == SpawnState.Destroyed
+                self.state = SpawnState.Destroyed
                 self.score_points(sim, False)
             # esif IF SURRENDERED
             # <if_object_property property="hasSurrendered" name="${name}" comparator="EQUALS" value="1"/>
 
 
     def spawn(self, sim):
-        self.id = sim.add_active(self.race, self.hull)
+        self.id = sim.make_new_active('behav_npcship', self.hull)
         obj = sim.get_space_object(self.id)
-        obj.move(glm.Vec3(self.x,self.y,self.z))
+        sim.reposition_space_object(obj, self.x,self.y,self.z)
+        print(f"Spawned {self.id}:{self.name} at:{obj.pos.x},:{obj.pos.y},:{obj.pos.z}")
+        self.state = SpawnState.Spawned
         #TODO: set the name
         #TODO: set the angle
         #TODO: what to do with size
@@ -111,9 +120,9 @@ class TonnageObject:
 Skaraan ships have extra ability settings
 """
 class TonnageSkaraan(TonnageObject):
-    def __init__(self, name, x,y,z,angle, race,hull, size, abilities=None, fleet_number=-1):
+    def __init__(self, name, x,y,z,angle, race,hull, size, fleet_number=-1, abilities=None,):
         super().__init__(name,x,y,z,angle,race,hull,size, fleet_number)
-        self.attributes = abilities
+        self.abilities = abilities
 
 
     def spawn(self, sim):
@@ -211,4 +220,4 @@ class TonnageHunter(TonnageObject):
 
     def tick(self, sim):
         super().tick(sim)
-        self.redeploy_beacon(sim)
+        # self.redeploy_beacon(sim)
