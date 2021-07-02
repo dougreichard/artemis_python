@@ -1,5 +1,5 @@
-from tonnage import TonnageObject, TonnageSkaraan, TonnageTorgoth
-from whales import Whales
+from tonnage import TonnageObject, TonnageSkaraan, TonnageHunter
+from whales import WhaleHunt, Whales
 
 
 class Period:
@@ -69,14 +69,17 @@ class Periods:
                            abilities={'ability_captain': "AntiTorp", 'ability_clear': "shlddrain,LowVis,Stealth"}),
         ])
     ]
-    whales = Whales()
+    whale_hunt = WhaleHunt()
+    
 
     def start(self, sim):
         # eight minutes timer
         self.timer_end = 480
         self.elapsed = 0
         self.period = 0
-        self.whales.start(sim)
+        self.whale_hunt.start(sim)
+        
+
     
     def period_spawn(self, sim):
         if self.period < len(self.periods):

@@ -32,8 +32,8 @@ def  HandleScriptStart(sim):
 
 	# making a bounch of asteroids
 	add_asteroids(sim, scatter.line(10, -2000,0,0, 2200,0, 1000,True), "line RND")
-	add_asteroids(sim, scatter.ring(4,4, -2000,0,-1000, 100, 800, 0, 160,True), "ring rnd")
-	add_asteroids(sim, scatter.ring_density([2, 4, 20], 2000,0,-1000, 200, 800, 0, 360,False), "ring density")
+	add_asteroids(sim, scatter.ring(4,4, -2000,0,-1000, 800, 100, 0, 160,True), "ring rnd")
+	add_asteroids(sim, scatter.ring_density([2, 4, 20], 2000,0,-1000, 800, 200, 0, 360,False), "ring density")
 	add_asteroids(sim, scatter.sphere(50, 0,0,4000, 400), "sphere")
 	add_asteroids(sim, scatter.sphere(50, -2000,0,2000, 200, 800, ring=True), "sphere-Ring")
 	add_asteroids(sim, scatter.rect_fill(5,5,  2000,0, 4000, 500, 500, True), "Grid")

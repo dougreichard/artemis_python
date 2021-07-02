@@ -75,10 +75,6 @@ class Mission:
                        "Leviathan", "medium", fleet_number=5, ship=0.0, captain=0.0),
         TonnageTorgoth("Leviathan 2", 21000.0, 0.0, 22000.0, 45.0, "Torgoth",
                        "Leviathan", "medium", fleet_number=5, ship=-1.0, captain=-1.0),
-        TonnageHunter("Hunter[1]", 58300,57,78300, 70),
-        TonnageHunter("Hunter[2]", 59300,57,23500, 80),
-        TonnageHunter("Hunter[3]", 38200,-57,43500, 90),
-        TonnageHunter("Hunter[4]", 58200,-245,43500, 100),
     ]
 
     # Maybe these should be in periods
@@ -140,10 +136,22 @@ class Mission:
     def tick(self, sim):
         # self.bonus_fleets.tick(sim)
         # self.periods.tick(sim)
-        for enemy in self.enemies:
-            enemy.tick(sim)
-        #self.do_jump(self.enemies)
-        #self.do_jump(self.stations.stations)
+        # if the player still exists
+        if sim.space_object_exists(self.playerID):
+            player = sim.get_space_object(self.playerID)
+            for enemy in self.enemies:
+                enemy.tick(sim)
+                if sim.space_object_exists(enemy.id):
+                    npc_ship = sim.get_space_object(enemy.id)
+                    blob = npc_ship.data_set
+                    # make the npc's target be the position of the player
+                    blob.set("target_pos_x", player.pos.x,0)
+                    blob.set("target_pos_y", player.pos.y,0)
+                    blob.set("target_pos_z", player.pos.z,0)
+                    blob.set("target_id", player.unique_ID,0)
+
+        #things = self.stations.stations
+        #self.do_jump(things = self.enemies)
 
     def do_jump(self, sim, things):
         # every ten second jump near something
