@@ -142,8 +142,8 @@ class Mission:
         # self.periods.tick(sim)
         for enemy in self.enemies:
             enemy.tick(sim)
-        #things = self.stations.stations
-        #self.do_jump(things = self.enemies)
+        #self.do_jump(self.enemies)
+        #self.do_jump(self.stations.stations)
 
     def do_jump(self, sim, things):
         # every ten second jump near something
