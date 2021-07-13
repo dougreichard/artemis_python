@@ -34,6 +34,7 @@ class Station:
                 self.state = SpawnState.Destroyed
                 TonnageObject.tonnage -= 90
                 print(f'Total tonnage now: {TonnageObject.tonnage}')
+                sim.delete_landmark_by_name(self.name);
                 # <big_message title="${race} ${hull} ${name} destroyed" OR SURRENDER
                 #       subtitle1="${_.int(weight) <0?'Penalty ':''}${weight} kilotons" subtitle2=""/>
                 # <log text="${race} ${hull} ${name} destroyed"/>
@@ -47,6 +48,7 @@ class Station:
         self.id = sim.make_new_active('behav_station', self.station_type)
         obj = sim.get_space_object(self.id)
         sim.reposition_space_object(obj, self.x,0,self.z)
+        sim.add_landmark(self.x, 0,self.z, self.name, 1,1,0,1);
         print(f"Spawned {self.id}:{self.name} at:{obj.pos.x},:{obj.pos.y},:{obj.pos.z}")
         self.state = SpawnState.Spawned
         #TODO: 

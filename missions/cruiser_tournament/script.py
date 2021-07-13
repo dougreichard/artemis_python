@@ -8,6 +8,7 @@
 from periods import Periods
 from bonusfleets import BonusFleets
 from stations import Stations
+from targeting import assign_closest, assign_targets
 
 import sbs
 
@@ -101,10 +102,10 @@ class Mission:
           Players start in bottom right of of the 100,000 x 100,000 sector with one shuttle 'Pilgrim' aboard
         """
         
-        # playerID will be a NUMBER, a unique value for every space object that you create.
-        self.playerID = sim.make_new_player("behav_playership", "Battle Cruiser");
-        player = sim.get_space_object(self.playerID)
-        sim.reposition_space_object(player, 50000,0,50000)
+        # player_id will be a NUMBER, a unique value for every space object that you create.
+        self.player_id = sim.make_new_player("behav_playership", "Battle Cruiser");
+        player = sim.get_space_object(self.player_id)
+        sim.reposition_space_object(player, 39055.0,0,85951.0)
 
         # <set_player_carried_type player_slot="0" bay_slot="0" name="Dagger" raceKeys="TSN player" hullKeys="TSN Shuttle"/>
         # <create type="player" player_slot="0" x="39055.0" y="0.0" z="85951.0" angle="295" name="Artemis" raceKeys="TSN player" hullKeys="Light Cruiser" warp="yes" jump="no"/>
@@ -124,7 +125,11 @@ class Mission:
         self.jump_to = 0
         self.jump = 0
         self.stations.spawn(sim)
-        # self.periods.start(sim)
+        self.periods.start(sim)
+
+        # TODO: Is this a hack? setting the stations on the periods
+        setattr(self.periods, 'stations', self.stations)
+        setattr(self.periods, 'player_id', self.player_id)
         """
         The Start Block also presents players with the mission title
 
@@ -135,23 +140,19 @@ class Mission:
 
     def tick(self, sim):
         # self.bonus_fleets.tick(sim)
-        # self.periods.tick(sim)
         # if the player still exists
-        if sim.space_object_exists(self.playerID):
-            player = sim.get_space_object(self.playerID)
+        if sim.space_object_exists(self.player_id):
+            player = sim.get_space_object(self.player_id)
+            self.periods.tick(sim)
             for enemy in self.enemies:
                 enemy.tick(sim)
-                if sim.space_object_exists(enemy.id):
-                    npc_ship = sim.get_space_object(enemy.id)
-                    blob = npc_ship.data_set
-                    # make the npc's target be the position of the player
-                    blob.set("target_pos_x", player.pos.x,0)
-                    blob.set("target_pos_y", player.pos.y,0)
-                    blob.set("target_pos_z", player.pos.z,0)
-                    blob.set("target_id", player.unique_ID,0)
+                assign_closest(sim, enemy, self.stations.stations, [{'id': self.player_id}])
+            
+                
+                    
 
         #things = self.stations.stations
-        #self.do_jump(things = self.enemies)
+        #self.do_jump(sim, things = self.enemies)
 
     def do_jump(self, sim, things):
         # every ten second jump near something
@@ -163,7 +164,7 @@ class Mission:
                 thing_id = thing.id
                 thing_obj = sim.get_space_object(thing_id)
                 if thing_obj is not None:
-                    player = sim.get_space_object(self.playerID)
+                    player = sim.get_space_object(self.player_id)
                     x = thing_obj.pos.x
                     y = thing_obj.pos.y
                     z = thing_obj.pos.z

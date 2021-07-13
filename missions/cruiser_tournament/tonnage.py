@@ -72,6 +72,14 @@ class TonnageObject:
             self.hull = 'Dreadnaught'
         if hull == 'Defiler':
             self.hull = 'Hunter'
+        if hull == 'Light Carrier':
+            self.hull = 'ARV Carrier'
+        if hull == 'Carrier':
+            self.hull = 'ARV Carrier'
+        if hull == 'Enforcer':
+            self.hull = 'Hunter'
+        if hull == 'Executor':
+            self.hull = 'Hunter'
         self.state = SpawnState.NotSpawned
 
     # add tonnage points when destroyed
@@ -96,10 +104,15 @@ class TonnageObject:
         self.update_state(sim)
 
     def update_state(self, sim):
+        sim.delete_landmark_by_name(self.name);
         if self.state == SpawnState.Spawned:
             if not sim.space_object_exists(self.id):
                 self.state = SpawnState.Destroyed
                 self.score_points(sim, False)
+            else:
+                obj = sim.get_space_object(self.id)
+                sim.add_landmark(obj.pos.x, 0,obj.pos.z, self.name, 1,0,0,1);
+                
             # esif IF SURRENDERED
             # <if_object_property property="hasSurrendered" name="${name}" comparator="EQUALS" value="1"/>
 
@@ -110,6 +123,7 @@ class TonnageObject:
         sim.reposition_space_object(obj, self.x,self.y,self.z)
         print(f"Spawned {self.id}:{self.name} at:{obj.pos.x},:{obj.pos.y},:{obj.pos.z}")
         self.state = SpawnState.Spawned
+        sim.add_landmark(self.x, 0,self.z, self.name, 1,0,0,1);
         #TODO: set the name
         #TODO: set the angle
         #TODO: what to do with size

@@ -1,4 +1,5 @@
 from tonnage import TonnageHunter
+from PyAddons.formations.vec import Vec3
 
 class Whale:
     def __init__(self, name, x, y, z):
@@ -43,6 +44,8 @@ class WhaleHunt:
     def start(self, sim):
         for whale in self.whales:
             whale.spawn(sim)
+        for hunter in self.hunters:
+            hunter.spawn(sim)
 
     def tick(self, sim):
         # hunters hunt whales

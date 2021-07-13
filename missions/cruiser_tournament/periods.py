@@ -1,5 +1,6 @@
 from tonnage import TonnageObject, TonnageSkaraan, TonnageHunter
-from whales import WhaleHunt, Whales
+from whales import WhaleHunt
+from targeting import assign_closest, assign_targets
 
 
 class Period:
@@ -83,17 +84,17 @@ class Periods:
     
     def period_spawn(self, sim):
         if self.period < len(self.periods):
-            for enemy in self.periods[self.period]:
+            for enemy in self.periods[self.period].enemies:
+                print(f'period {self.period+1} spawn {enemy.name}')
                 enemy.spawn(sim)
 
-    def next_period(self,sim):
-        # Check for end of period
-        if self.elapsed > self.timer_end:
-            bonus = self.whales.bonus(sim)
-            TonnageObject.tonnage += bonus
-            #TODO:  <big_message title="End of First Period" subtitle1="Now spawning more enemies." subtitle2="Whale Bonus = |Bonus|"/>
-            # <log text="End of ${name}. Whale Bonus = |Bonus|"/>
-            # <log text="Score = |Tonnage| kt  |Minutes| minutes remaining."/>
+    def score_period(self,sim):
+        bonus = self.whale_hunt.bonus(sim)
+        TonnageObject.tonnage += bonus
+        #TODO:  <big_message title="End of First Period" subtitle1="Now spawning more enemies." subtitle2="Whale Bonus = |Bonus|"/>
+        # <log text="End of ${name}. Whale Bonus = |Bonus|"/>
+        # <log text="Score = |Tonnage| kt  |Minutes| minutes remaining."/>
+
             
     def start_end_game(self, sim):
         # <big_message title="END OF FINAL PERIOD" subtitle1="Congratulations" subtitle2="Whale Bonus = |Bonus|"/>
@@ -111,18 +112,30 @@ class Periods:
         # now assumes tick every 2 seconds
         self.elapsed += 2
         if self.elapsed > self.timer_end:
-            if self.period < len(self.periods):
-                self.next_period(sim)
-            elif self.period == len(self.periods):
-                self.start_end_game(sim)
-                self.timer_end = 8
-                self.period = -1
-            elif self.period == -1:
+            if self.period == -1:
                 # Game is over
                 self.end_game(sim)
                 return
+            elif self.period < len(self.periods):
+                self.period_spawn(sim)
+                if self.period > 0:
+                    self.score_period(sim)
+            elif self.period == len(self.periods):
+                self.score_period(sim)
+                self.start_end_game(sim)
+                self.timer_end = 8
+                self.period = -1
+          
             self.elapsed = 0
             self.period += 1
+         
+
+        # have the hunters chase the whales
+        self.whale_hunt.tick(sim)
+        for i in range(0,self.period):
+            for enemy in self.periods[i].enemies:
+                enemy.tick(sim)
+                assign_closest(sim, enemy, self.stations.stations, [{'id': self.player_id}])
 
 
 
