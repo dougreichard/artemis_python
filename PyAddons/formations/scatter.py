@@ -2,7 +2,7 @@ import math
 from random import uniform
 from .vec import Vec3
 
-def arc(count, x,y,z, r, start=0.0, end=90.0):
+def arc(count, x,y,z, r, start=0.0, end=90.0, random=False):
     r"""Calculate the points along an circular arc
 
     Parameters
@@ -17,10 +17,15 @@ def arc(count, x,y,z, r, start=0.0, end=90.0):
     end: float=360, optional
         the angle to end at in degrees
     """
-    a_start = math.radians(start)
-    a_diff = (math.radians(end)-a_start)
+    #Make clockwise by negating
+    a_start = -math.radians(start-90)
+    a_end = -math.radians(end-90)
+    a_diff = (a_end-a_start) / count
     for i in range(0,count):
-        angle=(i/count)*a_diff + a_start
+        if random:
+            angle = uniform(a_start, a_end)
+        else:
+            angle=i*a_diff + a_start
         yield Vec3(x+math.cos(angle)*r, y, z+math.sin(angle)*r)
 
 
@@ -156,8 +161,9 @@ def ring(ca, cr, x,y,z, outer_r, inner_r=0, start=0.0, end=90.0, random=False):
         when true pointw will be randomly placed
         when false points will be evenly placed
     """
-    a_start = math.radians(start)
-    a_end = math.radians(end)
+    #Make clockwise by negating
+    a_start = -math.radians(start)
+    a_end = -math.radians(end)
     a_diff = (a_end-a_start)
     r_diff = (outer_r - inner_r) / (cr-1)
     for r in range(0, cr):
@@ -191,8 +197,9 @@ def ring_density(counts, x,y,z,  outer_r, inner_r=0, start=0.0, end=90.0, random
         when false points will be evenly placed
 
     """
-    a_start = math.radians(start)
-    a_end = math.radians(end)
+    #Make clockwise by negating
+    a_start = -math.radians(start)
+    a_end = -math.radians(end)
     a_diff = (a_end-a_start)
     r_diff = (outer_r - inner_r) / (len(counts)-1)
     for r in range(0, len(counts)):

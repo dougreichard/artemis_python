@@ -1,7 +1,7 @@
 from tonnage import SpawnState
 from PyAddons.formations.vec import Vec3
 
-def assign_closest(sim, chaser,  *args):
+def assign_closest(sim, chaser,  *args, max_dist=float('inf')):
     # Has not spawned
     if not hasattr(chaser, 'id'):
         return False
@@ -10,7 +10,7 @@ def assign_closest(sim, chaser,  *args):
     if ship is None:
         return False
     from_pos = Vec3(ship.pos.x, ship.pos.y, ship.pos.z)
-    last_dist = float('inf')
+    last_dist = max_dist
     for targets in args:
         to_pos  = None
         to_id = None
