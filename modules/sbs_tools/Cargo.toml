@@ -1,0 +1,16 @@
+[package]
+name = "sbs_tools"
+version = "0.1.0"
+authors = ["dougreichard <doug.reichard+gitlab@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+rand = "0.8.4"
+
+[dependencies.pyo3]
+version = "0.14.1"
+features = ["extension-module"]

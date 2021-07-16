@@ -27,6 +27,14 @@ class Player:
         self.id = sim.make_new_player("behav_playership", "Battle Cruiser");
         player = sim.get_space_object(self.id)
         sim.reposition_space_object(player, 39055.0,0,85951.0)
+        # <set_player_carried_type player_slot="0" bay_slot="0" name="Dagger" raceKeys="TSN player" hullKeys="TSN Shuttle"/>
+        # <create type="player" player_slot="0" x="39055.0" y="0.0" z="85951.0" angle="295" name="Artemis" raceKeys="TSN player" hullKeys="Light Cruiser" warp="yes" jump="no"/>
+        # <set_object_property property="energy" value="1100" player_slot="0"/>
+        # <set_object_property property="countEMP" value="4" player_slot="0"/>
+        # <set_object_property property="countMine" value="6" player_slot="0"/>
+        # <set_object_property property="countNuke" value="2" player_slot="0"/>
+        # <set_object_property property="countHoming" value="8" player_slot="0"/>
+        # <set_object_property property="countPshock" value="2" player_slot="0"/>
     def tick(self, sim):
         pass
 
@@ -145,14 +153,7 @@ class Mission:
         """
         self.player = Player()
         self.player.spawn(sim)
-        # <set_player_carried_type player_slot="0" bay_slot="0" name="Dagger" raceKeys="TSN player" hullKeys="TSN Shuttle"/>
-        # <create type="player" player_slot="0" x="39055.0" y="0.0" z="85951.0" angle="295" name="Artemis" raceKeys="TSN player" hullKeys="Light Cruiser" warp="yes" jump="no"/>
-        # <set_object_property property="energy" value="1100" player_slot="0"/>
-        # <set_object_property property="countEMP" value="4" player_slot="0"/>
-        # <set_object_property property="countMine" value="6" player_slot="0"/>
-        # <set_object_property property="countNuke" value="2" player_slot="0"/>
-        # <set_object_property property="countHoming" value="8" player_slot="0"/>
-        # <set_object_property property="countPshock" value="2" player_slot="0"/>
+
     def read_config(self):
         with open('config.json') as f:
             self.config = json.load(f)
