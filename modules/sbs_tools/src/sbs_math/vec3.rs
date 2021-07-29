@@ -31,15 +31,15 @@ pub struct Angles3 {
 #[pymethods]
 impl Vec3 {
     #[new]
-    fn new(x: f64, y: f64, z: f64) -> Self {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
         Vec3 { x, y, z }
     }
     /// The dot product of this vector and another
-    fn dot(&self, v: &Vec3) -> f64 {
+    pub fn dot(&self, v: &Vec3) -> f64 {
         self.x * v.x + self.y * v.y + self.z * v.z
     }
     /// The cross product of this vector and another
-    fn cross(&self, v: &Vec3) -> Vec3 {
+    pub fn cross(&self, v: &Vec3) -> Vec3 {
         Vec3::new(
             self.y * v.z - self.z * v.y,
             self.z * v.x - self.x * v.z,
@@ -47,7 +47,7 @@ impl Vec3 {
         )
     }
     /// An new vector diving this vector and a float value
-    fn divide(&self, f: f64) -> Vec3 {
+    pub fn divide(&self, f: f64) -> Vec3 {
         Vec3 {
             x: self.x / f,
             y: self.y / f,
@@ -55,31 +55,39 @@ impl Vec3 {
         }
     }
     /// the length of the vector
-    fn length(&self) -> f64 {
+    pub fn length(&self) -> f64 {
         return f64::sqrt(self.dot(self));
     }
     /// returns the unit vector from this vector
-    fn unit(&self) -> Vec3 {
+    pub fn unit(&self) -> Vec3 {
         self.divide(self.length())
     }
     /// the minimum of x,y or z
-    fn min(&self) -> f64 {
+    pub fn min(&self) -> f64 {
         f64::min(f64::min(self.x, self.y), self.z)
     }
     /// the maximum of x,y or z
-    fn max(&self) -> f64 {
+    pub fn max(&self) -> f64 {
         f64::max(f64::max(self.x, self.y), self.z)
     }
     /// return a new vector by adding another vector to this one
-    fn add(&self, v: &Vec3) -> Vec3 {
+    pub fn add(&self, v: &Vec3) -> Vec3 {
         Vec3 {
             x: self.x + v.x,
             y: self.y + v.y,
             z: self.z + v.y,
         }
     }
+    /// return a new vector by adding another vector to this one
+    pub fn sub(&self, v: &Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x - v.x,
+            y: self.y - v.y,
+            z: self.z - v.y,
+        }
+    }
     /// return a new vector by multiplying another vector to this one
-    fn mul(&self, v: &Vec3) -> Vec3 {
+    pub fn mul(&self, v: &Vec3) -> Vec3 {
         Vec3 {
             x: self.x * v.x,
             y: self.y * v.y,
@@ -87,7 +95,7 @@ impl Vec3 {
         }
     }
     /// return a new vector by adding a float to this one
-    fn mulf64(&self, v: f64) -> Vec3 {
+    pub fn mulf64(&self, v: f64) -> Vec3 {
         Vec3 {
             x: self.x * v,
             y: self.y * v,
@@ -95,20 +103,20 @@ impl Vec3 {
         }
     }
     /// convert to angle
-    fn to_angles(&self) -> Angles3 {
+    pub fn to_angles(&self) -> Angles3 {
         Angles3 {
             theta: f64::atan2(self.z, self.x),
             phi: f64::asin(self.y / self.length()),
         }
     }
     /// angle to
-    fn angle_to(&self, v: &Vec3) -> f64 {
+    pub fn angle_to(&self, v: &Vec3) -> f64 {
         f64::acos(self.dot(v) / (self.length() * v.length()))
     }
 
     /// return a new vector by offset this vector randomly
     #[args(outer = "0.0", only_top_half = "false", ring = "false")]
-    fn rand_offset(&self, r: f64, outer: f64, only_top_half: bool, ring: bool) -> Vec3 {
+    pub fn rand_offset(&self, r: f64, outer: f64, only_top_half: bool, ring: bool) -> Vec3 {
         let v = Vec3::rand_in_sphere(r, outer, only_top_half, ring);
         self.add(&v)
     }
@@ -116,7 +124,7 @@ impl Vec3 {
     /// Creates a random point in a sphere
     #[staticmethod]
     #[args(outer = "0.0", only_top_half = "false", ring = "false")]
-    fn rand_in_sphere(radius: f64, outer: f64, only_top_half: bool, ring: bool) -> Vec3 {
+    pub fn rand_in_sphere(radius: f64, outer: f64, only_top_half: bool, ring: bool) -> Vec3 {
         const PI: f64 = std::f64::consts::PI;
         let mut rng = thread_rng();
         let all = rand::distributions::Uniform::new_inclusive(-PI, PI);

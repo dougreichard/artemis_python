@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>WebSocket demo</title>
+    </head>
+    <body>
+        <script>
+            var ws = new WebSocket("ws://127.0.0.1:8765");
+            let btn = document.createElement("button");
+            btn.innerHTML = "Add Enemy";
+            document.body.appendChild(btn);
+
+            btn.onclick = function(){
+                ws.send('{"msg":"create"}')
+            };
+            var messages = document.createElement('ul');
+            ws.onmessage = function (event) {
+                let d = JSON.parse(event.data)
+
+                var messages = document.getElementsByTagName('ul')[0],
+                    message = document.createElement('li'),
+                    content = document.createElement("button");
+                    content.innerHTML = "Delete Enemy: "+d.id;
+                    document.body.appendChild(content);
+                    content.onclick = function(){
+                        ws.send(event.data)
+                        messages.removeChild(message)
+                    };
+                    
+                message.appendChild(content);
+                messages.appendChild(message);
+            };
+            document.body.appendChild(messages);
+           
+        </script>
+    </body>
+</html>
