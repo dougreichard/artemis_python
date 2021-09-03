@@ -1,4 +1,3 @@
-
 use anyhow::Result;
 
 use regex::Regex;
@@ -72,8 +71,6 @@ impl Ds9Obs {
                      .wait()
                     .await;
 
-        
-
         Ok(true)
     }
 
@@ -92,6 +89,58 @@ impl Ds9Obs {
         }
         Ok(())
     }
+    async fn process_add(&mut self, module: &str) -> Result<bool> {
+        // let command = Command::new("ls")
+        // .env("PATH", "/bin");
+        let _ = Command::new("pip")
+            .arg("install")
+            .arg(&module)
+            .arg("--target")
+            .arg("PyAddons\\lib")
+            .env("PATH", "PyRuntime\\Scripts;PyRuntime\\")
+            .env("PY_PIP", "PyRuntime\\Scripts")
+            .env("PY_LIBS", "PyRuntime\\Libs;PyRuntime\\Lib\\site-packages")
+            .stdout(Stdio::inherit())
+            .spawn()
+            .expect("Failed to execute command")
+            .wait()
+            .await;
+
+        Ok(true)
+    }
+    async fn process_install(&mut self, mission: &str) -> Result<bool> {
+        // let command = Command::new("ls")
+        // .env("PATH", "/bin");
+        let _ = Command::new("pip")
+            .arg("install")
+            .arg("-r")
+            .arg(&mission)
+            .arg("--target")
+            .arg("PyAddons\\lib")
+            .env("PATH", "PyRuntime\\Scripts;PyRuntime\\")
+            .env("PY_PIP", "PyRuntime\\Scripts")
+            .env("PY_LIBS", "PyRuntime\\Libs;PyRuntime\\Lib\\site-packages")
+            .stdout(Stdio::inherit())
+            .spawn()
+            .expect("Failed to execute command")
+            .wait()
+            .await;
+
+        Ok(true)
+    }
+    async fn process_uninstall(&mut self, module: &str) -> Result<bool> {
+        // let command = Command::new("ls")
+        // .env("PATH", "/bin");
+        //let dir = format!("F:\\backup\\artemis-3\\Art3.01\\PyAddons\\{}", &module);
+        // let dir = format!("PyAddons\\{}", &module);
+        // println!("{}", &dir);
+        // if Ds9Obs::dir_exists(&dir).await {
+        //     fs::remove_dir_all(&dir).await.expect("Rem dir failed");
+        // }
+        
+        Ok(true)
+    }
+
 
     async fn process_line(&mut self, input: &str) -> Result<bool> {
         // let cmd_connect = Regex::new(
@@ -99,6 +148,9 @@ impl Ds9Obs {
         // )?;
         let cmd_fixpip = Regex::new(r"^fix(p|pi|pip)?$")?;
         let cmd_doctor = Regex::new(r"^doc(t|to|tor)?$")?;
+        let cmd_add = Regex::new(r"^add\s+([\w\*\-]+)$")?;
+        let cmd_install = Regex::new(r"^in(s|st|sta|stal|stall)?$")?;
+        let cmd_uninstall = Regex::new(r"^uni(n|ns|nst|nsta|nstal|nstall)?\s+([\w\*\-]+)$")?;
         let cmd_scene = Regex::new(r"^sc(?:e|en|ene)?\s+([\w\*\-]+)$")?;
         let cmd_exit = Regex::new(r"^ex(i|it)?$")?;
 
@@ -111,6 +163,21 @@ impl Ds9Obs {
             self.process_doctor().await?;
         } else if let Some(_) = cmd_exit.captures(&line) {
             return Ok(false);
+        } else if let Some(_) = cmd_install.captures(&line) {
+            self.process_install("mission").await?;
+            return Ok(false);
+        } else if let Some(tup) = cmd_add.captures(&line) {
+            let module = match tup.get(2) {
+                Some(s) => s.as_str(),
+                _ => "",
+            };
+            self.process_add(module).await?;
+        } else if let Some(tup) = cmd_uninstall.captures(&line) {
+            let module = match tup.get(2) {
+                Some(s) => s.as_str(),
+                _ => "",
+            };
+            self.process_uninstall(module).await?;
         } else if let Some(tup) = cmd_scene.captures(&line) {
             let scene = match tup.get(1) {
                 Some(s) => s.as_str(),
@@ -121,7 +188,11 @@ impl Ds9Obs {
 
         Ok(true)
     }
-
+    
+/////////////////////////////////////////////////////////////////////////////////////
+/// /
+/// /
+/// /
     // Maybe this should be sync, but I'm leartning Async/Await and Tokio
     async fn file_exists(filename: &str) -> bool {
         let md = fs::metadata(filename).await;
@@ -195,6 +266,6 @@ async fn main() -> Result<()> {
     //         println!("No config found. Using defaults.");
     //     }
     // }
-    ds9.process_lines().await?;
+    ds9.process_lines().await.ok().expect("Whoops");
     Ok(())
 }
